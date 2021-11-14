@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>SHA Test</title>
+  <style type="text/css">
+    .hidden {
+      display: none;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+    }
+
+    button {
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>SHA Test</h3>
+  <div>
+    <textarea id="data-source"></textarea><br />
+    <hr />
+    <textarea id="data-result"></textarea><br />
+    <button id="button-run">计算</button>
+  </div>
+  <hr />
+  <div>
+    <b>版权信息</b>：<a href="https://github.com/chiro2001/wasm-cpp-sha">wasm-cpp-sha</a>，MIT协议。
+  </div>
+  <hr />
+  <script>
+    function $(el) {
+      return document.querySelector(el);
+    }
+  </script>
+  <script type="module">
+    var run = function () {
+      // if (!window.w) return;
+      let result;
+      let w = wasm;
+      // let filename = 'program.c';
+      // // w.ccall('save_file', null, ['string', 'string'], [filename, $("#data-source").value]);
+      // w.ccall('save_file', null, ['string', 'string'], [filename, myCodeMirror.getValue()]);
+      // // result = w.ccall("get_file", 'string', ["string"], [filename]);
+      // // console.log("file content:", result);
+      try {
+      // result = w.ccall('process', // name of C function 
+      //   'number',                 // return type
+      //   ['string'],                 // argument types
+      //   ["program.c"]);                // arguments
+      // console.log('result', result);
+      result = w.ccall('test', // name of C function 
+        'string',                 // return type
+        ['string'],                 // argument types
+        [$("#data-source").value]);                // arguments
+      console.log('result', result);
+      } catch(err) {
+        alert('执行错误: ' + err);
+        console.error(err);
+      }
+      $("#data-result").value = result;
+    };
+    import Module from './sha-test.js';
+    // var wasm = null;
+    // $("#data-source").value = '#include <stdio.h>\nint main() {\n    printf("hello, world; hello, wasm!\\n");\n    return 0;\n}';
+    Module().then(w => {
+      // wasm = w;
+      window['wasm'] = w
+      console.log('wasm', w);
+      return w;
+    }).then((w) => {
+      $('#button-run').addEventListener('click', run);
+    }).then(() => {
+      setTimeout(() => {
+        run();
+      }, 200);
+    })
+  </script>
+  <!-- <script src="lib/codemirror.js"></script> -->
+  <!-- <link rel="stylesheet" href="lib/codemirror.css"> -->
+  <!-- <script src="mode/clike/clike.js"></script> -->
+  <!-- <script>
+    var myCodeMirror = CodeMirror.fromTextArea($("#data-source"), {
+      lineNumbers: true,
+      mode: "text/x-csrc",
+      matchBrackets: true,
+    });
+    myCodeMirror.setValue('#include <stdio.h>\nint main() {\n  printf("hello, world; hello, wasm!\\n");\n  return 0;\n}')
+  </script> -->
+  <!-- <script src="./c4-wasm.js"></script> -->
+</body>
+
+</html>
